@@ -1,11 +1,14 @@
+import { ffmpeg } from "../sh";
+
 export type FFmpegAVOptionCapability = "E" | "D" | "F" | "V" | "A" | "S" | "X" | "R" | "B" | "T" | "P";
 
 export interface FFmpegAVOption {
     name: string;
     type: string;
-    ctx: FFmpegAVOptionCapability[];
+    ctx?: FFmpegAVOptionCapability[];
     desc: string;
     values?: FFmpegAVOptionValue[];
+    advanced?: boolean;
 };
 
 export interface FFmpegAVOptionValue {
@@ -28,15 +31,13 @@ export const parseAVOptionBlock = (lines: string[]) => {
             option.values ||= [];
 
             if (option.type == "int") {
-                let [label, value, caps, ...desc] = line.trim().split(" ").filter(Boolean);
-                
                 option.values.push({
                     name: sp[0],
                     value: sp[1],
                     ctx: parseAVOptionCapabilities(sp[2]),
                     desc: sp.slice(3).join(" "),
                 });
-            } else if(option.type == "flags") {
+            } else if(option.type == "flags" || option.type == "string") {
                 option.values.push({
                     name: sp[0],
                     ctx: parseAVOptionCapabilities(sp[1]),
@@ -57,4 +58,10 @@ export const parseAVOptionBlock = (lines: string[]) => {
         }
     }
     return options;
+};
+
+export const getFFmpegAVOptions = (type: string, component: string) => {
+    let lines = ffmpeg(`-h ${type}=${component}`).split("\n").filter(Boolean);
+    lines = lines.slice(1);
+    return parseAVOptionBlock(lines);
 };

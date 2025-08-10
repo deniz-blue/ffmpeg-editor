@@ -6,17 +6,29 @@ import { getFFmpegFilters } from "./lib/filter";
 import { getFFmpegFormats } from "./lib/format";
 import { getFFmpegCodecs } from "./lib/codec";
 import { getFFmpegProtocols } from "./lib/protocols";
+import { getFFmpegGlobalOptions } from "./manual/globalOptions";
 
 const info = {
-    colors: getFFmpegColors(),
-    hwaccels: getFFmpegHwaccels(),
-    sample_fmts: getFFmpegSampleFmts(),
+    options: getFFmpegGlobalOptions(),
+
+    formats: getFFmpegFormats(),
+    // muxers
+    // demuxers
+    // devices
+    codecs: getFFmpegCodecs(),
+    // decoders
+    // encoders
+    // bsfs
+    protocols: getFFmpegProtocols(),
+    filters: getFFmpegFilters(),
     pix_fmts: getFFmpegPixFmts(),
     layouts: getFFmpegLayoutInfo(),
-    filters: getFFmpegFilters(),
-    formats: getFFmpegFormats(),
-    codecs: getFFmpegCodecs(),
-    protocols: getFFmpegProtocols(),
+    sample_fmts: getFFmpegSampleFmts(),
+    colors: getFFmpegColors(),
+    // sources <device>
+    // sinks <device>
+    hwaccels: getFFmpegHwaccels(),
 };
 
-writeFileSync("./dump.json", JSON.stringify(info, null, 2));
+writeFileSync("./data.json", JSON.stringify(info, null, 2));
+console.log("Done");

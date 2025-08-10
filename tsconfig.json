@@ -18,7 +18,8 @@
         "jsx": "react-jsx"
     },
     "include": [
-        "src"
+        "src",
+        "codegen"
     ],
     "references": [
         {

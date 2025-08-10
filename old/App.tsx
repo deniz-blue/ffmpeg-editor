@@ -1,7 +1,7 @@
 import { ActionIcon, Box, Button, Card, Checkbox, CloseButton, Combobox, Container, CopyButton, Flex, Grid, Group, InputBase, Paper, ScrollArea, Select, Stack, Text, TextInput, Textarea, useCombobox } from '@mantine/core'
 import { useListState, useSetState } from '@mantine/hooks';
 import React, { useEffect, useState } from 'react'
-import { data } from './data';
+import { data } from '../old/data/data';
 import { IconArrowRight, IconPlus } from '@tabler/icons-react';
 import { modals } from '@mantine/modals';
 
