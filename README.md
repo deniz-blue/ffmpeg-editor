@@ -2,7 +2,7 @@
 
 Create, view, edit and analyze FFMPEG commands
 
-:sparkles: [Try it out here!](https://thealan404.github.io/ffmpeg-editor/)
+:sparkles: [Try it out here!](https://deniz-blue.github.io/ffmpeg-editor/)
 
 this is still a big WIP
 
