@@ -41,12 +41,18 @@ importers:
       dayjs:
         specifier: ^1.11.11
         version: 1.11.11
+      immer:
+        specifier: ^10.2.0
+        version: 10.2.0
       react:
         specifier: ^19.1.1
         version: 19.1.1
       react-dom:
         specifier: ^19.1.1
         version: 19.1.1(react@19.1.1)
+      zustand:
+        specifier: ^5.0.8
+        version: 5.0.8(@types/react@19.1.9)(immer@10.2.0)(react@19.1.1)
     devDependencies:
       '@types/node':
         specifier: ^24.2.0
@@ -503,6 +509,9 @@ packages:
     resolution: {integrity: sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q==}
     engines: {node: '>=6'}
 
+  immer@10.2.0:
+    resolution: {integrity: sha512-d/+XTN3zfODyjr89gM3mPq1WNX2B8pYsu7eORitdwyA2sBubnTl3laYlBk4sXY5FUa5qTZGBDPJICVbvqzjlbw==}
+
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -693,6 +702,24 @@ packages:
       sugarss:
         optional: true
       terser:
+        optional: true
+
+  zustand@5.0.8:
+    resolution: {integrity: sha512-gyPKpIaxY9XcO2vSMrLbiER7QMAMGOQZVRdJ6Zi782jkbzZygq5GI9nG8g+sMgitRtndwaBSl7uiqC49o1SSiw==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
         optional: true
 
 snapshots:
@@ -1024,6 +1051,8 @@ snapshots:
 
   get-nonce@1.0.1: {}
 
+  immer@10.2.0: {}
+
   js-tokens@4.0.0: {}
 
   loose-envify@1.4.0:
@@ -1189,3 +1218,9 @@ snapshots:
       '@types/node': 24.2.0
       fsevents: 2.3.3
       sugarss: 4.0.1(postcss@8.4.38)
+
+  zustand@5.0.8(@types/react@19.1.9)(immer@10.2.0)(react@19.1.1):
+    optionalDependencies:
+      '@types/react': 19.1.9
+      immer: 10.2.0
+      react: 19.1.1

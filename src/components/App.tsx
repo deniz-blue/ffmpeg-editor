@@ -8,13 +8,11 @@ export const App = () => {
     return (
         <MantineProvider forceColorScheme="dark">
             <Notifications />
-            {/* <FFmpegWasmProvider> */}
-                <ModalsProvider>
-                    <Layout>
-                        <MainView />
-                    </Layout>
-                </ModalsProvider>
-            {/* </FFmpegWasmProvider> */}
+            <ModalsProvider>
+                <Layout>
+                    <MainView />
+                </Layout>
+            </ModalsProvider>
         </MantineProvider>
     );
 };

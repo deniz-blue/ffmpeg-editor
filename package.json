@@ -1,9 +1,8 @@
 {
   "name": "ffmpeg-editor",
-  "version": "1.0.0",
   "description": "Create, view, edit and analyze FFMPEG commands",
-  "homepage": "https://thealan404.github.io/ffmpeg-editor",
-  "main": "index.js",
+  "homepage": "https://ffmpeg.deniz.blue",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -25,8 +24,10 @@
     "@mantine/notifications": "^8.2.4",
     "@tabler/icons-react": "^3.34.1",
     "dayjs": "^1.11.11",
+    "immer": "^10.2.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@types/node": "^24.2.0",

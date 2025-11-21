@@ -1,4 +1,5 @@
-import { ActionIcon, Badge, Group, Pill, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Checkbox, Divider, Group, Modal, Pill, Select, Stack, Text, Tooltip } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { IconMinus, IconPencil, IconPlus } from "@tabler/icons-react";
 
 export const FFMPEG_LOG_LEVEL_DATA = {
@@ -69,33 +70,60 @@ export const FFMPEG_LOG_LEVEL_DATA = {
     ],
 };
 
+export interface LogLevelValue {
+    enabled: string[];
+    disabled: string[];
+    level: number | null;
+};
+
+export const parseLogLevel = (value: string): LogLevelValue => {
+    let enabled: string[] = [];
+    let disabled: string[] = [];
+    let level: number | null = null;
+
+    if ((value[0] == "+" || value[0] == "-") && value[1] != "8") {
+        let sp = value.split(/(?=\+|\-)/);
+        for (let s of sp) {
+            if (s[0] == "+") enabled.push(s.slice(1));
+            if (s[0] == "-") disabled.push(s.slice(1));
+        }
+    } else {
+        let sp = value.split(/(?=\+|\-)/);
+        const levelStr = sp.pop().replace(/\+|\-/, "");
+        level = isNaN(Number(levelStr)) ? (FFMPEG_LOG_LEVEL_DATA.levels.find(x => x.string == levelStr)?.number ?? null) : Number(levelStr);
+        for (let s of sp) {
+            if (s[0] == "-") disabled.push(s.slice(1));
+            else if (s[0] == "+") enabled.push(s.slice(1));
+            else enabled.push(s);
+        }
+    }
+
+    return {
+        enabled,
+        disabled,
+        level,
+    };
+};
+
+export const stringifyLogLevel = (data: LogLevelValue) => {
+    return [
+        data.enabled.map(x => "+"+x).join(""),
+        data.disabled.map(x => "-"+x).join(""),
+        (((data.disabled.length || data.enabled.length) && data.level !== null) ? "+" : ""),
+        ((data.level !== null) ? FFMPEG_LOG_LEVEL_DATA.levels.find(x => x.number == data.level).string : ""),
+    ].join("");
+};
+
 export const LogLevel = ({
     value,
     onChange,
 }: {
     value: string;
-    onChange?: string;
+    onChange?: (v: string) => void;
 }) => {
-
-    let enabledFlags: string[] = [];
-    let disabledFlags: string[] = [];
-    let setLevel: string | null = null;
-
-    if (value[0] == "+" || value[0] == "-") {
-        let sp = value.split(/(?=\+|\-)/);
-        for(let s of sp) {
-            if(s[0] == "+") enabledFlags.push(s.slice(1));
-            if(s[0] == "-") disabledFlags.push(s.slice(1));
-        }
-    } else {
-        let sp = value.split(/(?=\+|\-)/);
-        setLevel = sp.pop().replace(/\+|\-/, "");
-        for(let s of sp) {
-            if(s[0] == "-") disabledFlags.push(s.slice(1));
-            else if(s[0] == "+") enabledFlags.push(s.slice(1));
-            else enabledFlags.push(s);
-        }
-    }
+    const [editing, { close, open }] = useDisclosure();
+    const data = parseLogLevel(value);
+    const { enabled, disabled, level } = data;
 
     return (
         <Stack gap={4}>
@@ -108,48 +136,103 @@ export const LogLevel = ({
                         variant="subtle"
                         color="gray"
                         size="sm"
+                        onClick={open}
                     >
                         <IconPencil />
                     </ActionIcon>
                 </Tooltip>
 
-                {!enabledFlags.length && !disabledFlags.length && !setLevel && (
+                <Modal opened={editing} onClose={close}>
+                    <LogLevelModal
+                        value={data}
+                        onChange={v => onChange(stringifyLogLevel({
+                            ...data,
+                            ...v,
+                        }))}
+                    />
+                </Modal>
+
+                {!enabled.length && !disabled.length && (level === null) && (
                     <Text c="dimmed">
                         {"<empty>"}
                     </Text>
                 )}
 
-                {enabledFlags.map(flag => (
-                    <Badge
-                        key={flag}
-                        color="green"
-                        leftSection={<IconPlus size={16} />}
-                        tt="unset"
-                    >
-                        {flag}
-                    </Badge>
+                {enabled.map(flag => (
+                    <Tooltip label={FFMPEG_LOG_LEVEL_DATA.flags.find(x => x.value == flag)?.desc ?? ""}>
+                        <Badge
+                            key={flag}
+                            color="green"
+                            leftSection={<IconPlus size={16} />}
+                            tt="unset"
+                        >
+                            {flag}
+                        </Badge>
+                    </Tooltip>
                 ))}
 
-                {disabledFlags.map(flag => (
-                    <Badge
-                        key={flag}
-                        color="red"
-                        leftSection={<IconMinus size={16} />}
-                        tt="unset"
-                    >
-                        {flag}
-                    </Badge>
+                {disabled.map(flag => (
+                    <Tooltip label={FFMPEG_LOG_LEVEL_DATA.flags.find(x => x.value == flag)?.desc ?? ""}>
+                        <Badge
+                            key={flag}
+                            color="red"
+                            leftSection={<IconMinus size={16} />}
+                            tt="unset"
+                        >
+                            {flag}
+                        </Badge>
+                    </Tooltip>
                 ))}
 
-                {setLevel && (
-                    <Badge
-                        color="gray"
-                        tt="unset"
-                    >
-                        {setLevel}
-                    </Badge>
+                {(level !== null) && (
+                    <Tooltip label={FFMPEG_LOG_LEVEL_DATA.levels.find(x => x.number == level)?.desc ?? ""}>
+                        <Badge
+                            color="gray"
+                            tt="unset"
+                        >
+                            {FFMPEG_LOG_LEVEL_DATA.levels.find(x => x.number == level)?.string ?? ""}
+                        </Badge>
+                    </Tooltip>
                 )}
             </Group>
         </Stack>
     )
+};
+
+export const LogLevelModal = ({
+    value,
+    onChange,
+}: {
+    value: LogLevelValue;
+    onChange: (v: Partial<LogLevelValue>) => void;
+}) => {
+    return (
+        <Stack>
+            <Select
+                label="Log Level"
+                data={FFMPEG_LOG_LEVEL_DATA.levels.map(level => ({
+                    value: level.number.toString(),
+                    label: level.string,
+                }))}
+
+                value={value.level?.toString()}
+                onChange={v => onChange({
+                    level: v ? Number(v) : null,
+                })}
+            />
+
+            <Divider
+                label="Flags"
+            />
+
+            {FFMPEG_LOG_LEVEL_DATA.flags.map(flag => (
+                <Checkbox
+                    key={flag.value}
+                    label={flag.value}
+                    description={flag.desc}
+                    disabled
+                />
+            ))}
+        </Stack>
+    );
 };

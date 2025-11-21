@@ -3,42 +3,10 @@ import { FFmpegFilesList } from "../files/FFmpegFilesList";
 import { useState } from "react";
 import { FFmpegCommand, stringifyFFmpegCommand } from "../../command/Command";
 import { LogLevel } from "../options/LogLevel";
+import { useCommand } from "../../store/useCommand";
 
 export const MainView = () => {
-    const [command, setCommand] = useState<FFmpegCommand>({
-        global: [
-            { name: "hide_banner", value: "" },
-            { name: "y", value: "" },
-            { name: "loglevel", value: "verbose" },
-        ],
-        inputs: [
-            {
-                url: "input.mp4",
-                codecs: [],
-                filters: [],
-                options: [],
-            },
-        ],
-        outputs: [
-            {
-                url: "output.mp4",
-                codecs: [
-                    {
-                        name: "libx264",
-                        streams: { streamType: "video" },
-                        options: [],
-                    },
-                    {
-                        name: "copy",
-                        streams: { streamType: "audio" },
-                        options: [],
-                    },
-                ],
-                filters: [],
-                options: [],
-            },
-        ],
-    });
+    const command = useCommand(store => store.command);
 
     return (
         <Stack>
@@ -52,6 +20,13 @@ export const MainView = () => {
                 <Stack>
                     <LogLevel
                         value={command.global.find(x => x.name == "loglevel")?.value || ""}
+                        onChange={value => {
+                            useCommand.setState(state => {
+                                const arg = state.command.global.find(x => x.name == "loglevel");
+                                if (!arg) return;
+                                arg.value = value;
+                            })
+                        }}
                     />
                 </Stack>
             </Fieldset>
@@ -59,13 +34,13 @@ export const MainView = () => {
             <Fieldset bg="dark" legend="Inputs">
                 <FFmpegFilesList
                     files={command.inputs}
-                    onChange={inputs => setCommand({ ...command, inputs })}
+                    onChange={inputs => ({ ...command, inputs })}
                     type="input"
                 />
             </Fieldset>
 
             <Fieldset bg="dark" legend="Simple Filtergraph">
-                
+
             </Fieldset>
 
             <Fieldset bg="dark" legend="Complex Filtergraph">
@@ -75,7 +50,7 @@ export const MainView = () => {
             <Fieldset bg="dark" legend="Outputs">
                 <FFmpegFilesList
                     files={command.outputs}
-                    onChange={outputs => setCommand({ ...command, outputs })}
+                    onChange={outputs => ({ ...command, outputs })}
                     type="output"
                 />
             </Fieldset>
